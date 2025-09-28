@@ -1,0 +1,42 @@
+# C# 项目
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.sln.docstates
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# 数据库和二进制
+*.db
+*.exe
+*.rar
+
+# 其他
+*.log
+*.html (如果不是核心文件)
+hooks/
+from geopy.py  # 如果是临时导入
