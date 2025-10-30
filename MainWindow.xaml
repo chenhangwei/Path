@@ -1,99 +1,294 @@
 ﻿<Window x:Class="Path.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Path"
-        xmlns:views="clr-namespace:Path.Views"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+  xmlns:local="clr-namespace:Path"
+xmlns:views="clr-namespace:Path.Views"
+mc:Ignorable="d"
+        Title="3D 路径编辑器 - STEP 导入与放样" Height="800" Width="1400" WindowStartupLocation="CenterScreen">
     <DockPanel LastChildFill="True">
-        <Menu DockPanel.Dock="Top">
-            <MenuItem Header="文件">
-                <MenuItem Header="打开" Command="{Binding OpenCommand}"/>
-                <MenuItem Header="保存" Command="{Binding SaveCommand}"/>
-                <MenuItem Header="导入" Command="{Binding ImportXmlCommand}"/>
-                <MenuItem Header="导出XML" Command="{Binding ExportXmlCommand}"/>
-            </MenuItem>
-            <MenuItem Header="编辑">
-                <MenuItem Header="添加步骤" Command="{Binding AddStepCommand}"/>
-                <MenuItem Header="删除步骤" Command="{Binding RemoveStepCommand}"/>
+        <!-- 菜单栏 -->
+  <Menu DockPanel.Dock="Top">
+      <MenuItem Header="文件(_F)">
+    <MenuItem Header="导入 STEP 文件(_S)" Command="{Binding ImportStepFileCommand}" InputGestureText="Ctrl+I">
+         <MenuItem.Icon>
+         <TextBlock Text="📐" FontSize="16"/>
+</MenuItem.Icon>
+    </MenuItem>
+             <MenuItem Header="导入 XML(_I)" Command="{Binding ImportXmlCommand}" InputGestureText="Ctrl+O">
+          <MenuItem.Icon>
+      <TextBlock Text="📂" FontSize="16"/>
+            </MenuItem.Icon>
+           </MenuItem>
+       <MenuItem Header="导出 XML(_E)" Command="{Binding ExportXmlCommand}" InputGestureText="Ctrl+S">
+         <MenuItem.Icon>
+     <TextBlock Text="💾" FontSize="16"/>
+      </MenuItem.Icon>
+         </MenuItem>
                 <Separator/>
-                <MenuItem Header="上移步骤" Command="{Binding MoveStepUpCommand}"/>
-                <MenuItem Header="下移步骤" Command="{Binding MoveStepDownCommand}"/>
-                <Separator/>
-                <MenuItem Header="添加 USV" Command="{Binding AddUsvCommand}"/>
+           <MenuItem Header="退出(_X)" Click="OnExit">
+        <MenuItem.Icon>
+             <TextBlock Text="❌" FontSize="16"/>
+   </MenuItem.Icon>
+       </MenuItem>
             </MenuItem>
+            <MenuItem Header="曲线(_C)">
+             <MenuItem Header="自动命名(_A)" Command="{Binding AutoNameCurvesCommand}">
+  <MenuItem.Icon>
+                  <TextBlock Text="🏷️" FontSize="16"/>
+              </MenuItem.Icon>
+    </MenuItem>
+       <MenuItem Header="重命名(_R)" Command="{Binding RenameCurveCommand}">
+   <MenuItem.Icon>
+            <TextBlock Text="✏️" FontSize="16"/>
+          </MenuItem.Icon>
+           </MenuItem>
+   <Separator/>
+        <MenuItem Header="合并相连曲线(_M)" Command="{Binding MergeConnectedCurvesCommand}" InputGestureText="Ctrl+M">
+  <MenuItem.Icon>
+      <TextBlock Text="🔗" FontSize="16"/>
+  </MenuItem.Icon>
+   </MenuItem>
+  <Separator/>
+      <MenuItem Header="删除曲线(_D)" Command="{Binding RemoveCurveCommand}">
+         <MenuItem.Icon>
+            <TextBlock Text="🗑️" FontSize="16"/>
+    </MenuItem.Icon>
+          </MenuItem>
+       <MenuItem Header="清除所有(_C)" Command="{Binding ClearAllCurvesCommand}">
+  <MenuItem.Icon>
+          <TextBlock Text="🧹" FontSize="16"/>
+          </MenuItem.Icon>
+     </MenuItem>
+ </MenuItem>
+ <MenuItem Header="放样(_L)">
+   <MenuItem Header="放样所有曲线(_A)" Command="{Binding LoftAllCurvesCommand}" InputGestureText="Ctrl+Shift+L">
+               <MenuItem.Icon>
+ <TextBlock Text="📈" FontSize="16"/>
+            </MenuItem.Icon>
+</MenuItem>
+       <Separator/>
+     <MenuItem Header="反转曲线点顺序(_R)" Command="{Binding ReverseCurveCommand}" InputGestureText="Ctrl+R">
+      <MenuItem.Icon>
+       <TextBlock Text="🔄" FontSize="16"/>
+   </MenuItem.Icon>
+</MenuItem>
+  </MenuItem>
+  <MenuItem Header="生成(_G)">
+         <MenuItem Header="生成步骤列表(_G)" Command="{Binding GenerateStepsFromCurvesCommand}" InputGestureText="Ctrl+G">
+  <MenuItem.Icon>
+         <TextBlock Text="⚙️" FontSize="16"/>
+     </MenuItem.Icon>
+     </MenuItem>
+            </MenuItem>
+   <MenuItem Header="帮助(_H)">
+                <MenuItem Header="关于(_A)" Click="OnAbout">
+    <MenuItem.Icon>
+              <TextBlock Text="ℹ️" FontSize="16"/>
+   </MenuItem.Icon>
+</MenuItem>
+      </MenuItem>
         </Menu>
 
-        <!-- 新增：工具条（ToolBar）复用相同的命令 -->
+    <!-- 工具栏 -->
         <ToolBarTray DockPanel.Dock="Top">
-            <ToolBar>
-                <Button Command="{Binding OpenCommand}" Content="打开" ToolTip="打开"/>
-                <Button Command="{Binding SaveCommand}" Content="保存" ToolTip="保存"/>
-                <Separator/>
-                <Button Command="{Binding ImportXmlCommand}" Content="导入" ToolTip="导入 XML 文件"/>
-                <Button Command="{Binding ExportXmlCommand}" Content="导出XML" ToolTip="导出为 XML"/>
-            </ToolBar>
+     <ToolBar>
+       <Button Command="{Binding ImportStepFileCommand}" ToolTip="导入 STEP 文件 (Ctrl+I)">
+      <StackPanel Orientation="Horizontal">
+        <TextBlock Text="📐 " FontSize="16"/>
+     <TextBlock Text="导入STEP" VerticalAlignment="Center"/>
+     </StackPanel>
+      </Button>
+   <Separator/>
+          <Button Command="{Binding AutoNameCurvesCommand}" ToolTip="自动命名所有曲线">
+           <StackPanel Orientation="Horizontal">
+    <TextBlock Text="🏷️ " FontSize="16"/>
+     <TextBlock Text="自动命名" VerticalAlignment="Center"/>
+        </StackPanel>
+   </Button>
+       <Button Command="{Binding MergeConnectedCurvesCommand}" ToolTip="合并相连的曲线 (Ctrl+M)">
+   <StackPanel Orientation="Horizontal">
+      <TextBlock Text="🔗 " FontSize="16"/>
+    <TextBlock Text="合并曲线" VerticalAlignment="Center"/>
+   </StackPanel>
+      </Button>
+    <Separator/>
+<Button Command="{Binding LoftAllCurvesCommand}" ToolTip="放样所有曲线 (Ctrl+Shift+L)">
+        <StackPanel Orientation="Horizontal">
+  <TextBlock Text="📈 " FontSize="16"/>
+  <TextBlock Text="放样全部" VerticalAlignment="Center"/>
+ </StackPanel>
+   </Button>
+       <Button Command="{Binding ReverseCurveCommand}" ToolTip="反转选中曲线点顺序 (Ctrl+R)">
+      <StackPanel Orientation="Horizontal">
+       <TextBlock Text="🔄" FontSize="16"/>
+        <TextBlock Text="反转" VerticalAlignment="Center"/>
+       </StackPanel>
+   </Button>
+  <Separator/>
+ <Button Command="{Binding GenerateStepsFromCurvesCommand}" ToolTip="生成步骤列表 (Ctrl+G)">
+           <StackPanel Orientation="Horizontal">
+    <TextBlock Text="⚙️ " FontSize="16"/>
+       <TextBlock Text="生成步骤" VerticalAlignment="Center"/>
+    </StackPanel>
+      </Button>
+    <Separator/>
+        <Button Command="{Binding ExportXmlCommand}" ToolTip="导出 XML 文件 (Ctrl+S)">
+      <StackPanel Orientation="Horizontal">
+      <TextBlock Text="💾 " FontSize="16"/>
+    <TextBlock Text="导出" VerticalAlignment="Center"/>
+    </StackPanel>
+      </Button>
+  </ToolBar>
+     </ToolBarTray>
 
-            <ToolBar>
-                <Button Command="{Binding AddStepCommand}" Content="添加步骤" ToolTip="添加步骤"/>
-                <Button Command="{Binding RemoveStepCommand}" Content="删除步骤" ToolTip="删除当前步骤"/>
-                <Separator/>
-                <Button Command="{Binding MoveStepUpCommand}" Content="上移" ToolTip="上移当前步骤"/>
-                <Button Command="{Binding MoveStepDownCommand}" Content="下移" ToolTip="下移当前步骤"/>
-                <Separator/>
-                <Button Command="{Binding AddUsvCommand}" Content="添加 USV" ToolTip="向当前步骤添加 USV"/>
-            </ToolBar>
-        </ToolBarTray>
+         <!-- 状态栏 -->
+     <StatusBar DockPanel.Dock="Bottom" Height="28">
+<StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+        <Grid>
+     <Grid.ColumnDefinitions>
+           <ColumnDefinition Width="*"/>
+             <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="Auto"/>
+           </Grid.ColumnDefinitions>
+             </Grid>
+     </ItemsPanelTemplate>
+     </StatusBar.ItemsPanel>
 
-        <StatusBar DockPanel.Dock="Bottom" Height="25" >
-            <TextBlock Text="{Binding StatusMessage}"/>
+      <StatusBarItem Grid.Column="0">
+       <TextBlock Text="{Binding StatusMessage}" FontWeight="SemiBold"/>
+            </StatusBarItem>
+ <Separator Grid.Column="1"/>
+         <StatusBarItem Grid.Column="2">
+       <StackPanel Orientation="Horizontal">
+           <TextBlock Text="曲线数: " Margin="0,0,4,0"/>
+         <TextBlock Text="{Binding Curves.Count}" FontWeight="Bold"/>
+          <TextBlock Text=" | 步骤数: " Margin="8,0,4,0"/>
+        <TextBlock Text="{Binding Steps.Count}" FontWeight="Bold"/>
+</StackPanel>
+          </StatusBarItem>
         </StatusBar>
 
-        <Grid >
+        <!-- 主内容区域 -->
+        <Grid Margin="4">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="300"/>
-                <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="200" MinWidth="150"/>
+   <ColumnDefinition Width="4"/>
+    <ColumnDefinition Width="300" MinWidth="250"/>
+    <ColumnDefinition Width="4"/>
+   <ColumnDefinition Width="*" MinWidth="400"/>
             </Grid.ColumnDefinitions>
 
-            <!-- 已有左两列控件 -->
-            <TreeView x:Name="StepTree" Grid.Column="0"  ItemsSource="{Binding Steps}" SelectedItemChanged="OnStepSelected">
-                <TreeView.ItemTemplate>
-                    <HierarchicalDataTemplate ItemsSource="{Binding USVs}">
-                        <TextBlock Text="{Binding DisplayName}" />
-                    </HierarchicalDataTemplate>
-                </TreeView.ItemTemplate>
-            </TreeView>
+<!-- 左侧：曲线列表 -->
+        <Border Grid.Column="0" BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="4" Padding="4" Background="White">
+       <DockPanel>
+              <TextBlock DockPanel.Dock="Top" Text="导入的曲线" FontWeight="Bold" Margin="0,0,0,8" FontSize="14"/>
+  
+              <!-- 放样点数设置 -->
+            <Border DockPanel.Dock="Top" Background="#F0F8FF" BorderBrush="#4A90E2" BorderThickness="1" 
+      CornerRadius="4" Padding="8" Margin="0,0,0,8">
+ <StackPanel>
+<TextBlock Text="放样点数设置" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+          <!-- ✅ 修复：添加双向绑定和立即更新 -->
+    <TextBox Text="{Binding DefaultLoftPointCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+ VerticalAlignment="Center" TextAlignment="Center" FontSize="14" Padding="4"
+      ToolTip="设置放样时生成的点数（默认：10）"/>
+     </StackPanel>
+   </Border>
 
-            <DataGrid x:Name="UsvGrid" Grid.Column="1" AutoGenerateColumns="False" ItemsSource="{Binding SelectedStep.USVs}" CanUserAddRows="False">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="编号" Binding="{Binding Id}"/>
-                    <DataGridTextColumn Header="X" Binding="{Binding X, StringFormat=F3}"/>
-                    <DataGridTextColumn Header="Y" Binding="{Binding Y, StringFormat=F3}"/>
-                    <DataGridTextColumn Header="Yaw" Binding="{Binding Yaw, StringFormat=F3}"/>
-                    <DataGridTextColumn Header="Speed" Binding="{Binding Speed, StringFormat=F3}"/>
+      <!-- 合并容差设置 -->
+  <Border DockPanel.Dock="Top" Background="#FFF8F0" BorderBrush="#E2904A" BorderThickness="1" 
+     CornerRadius="4" Padding="8" Margin="0,0,0,8">
+   <StackPanel>
+      <TextBlock Text="合并容差设置" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+     <!-- ✅ 修复：添加双向绑定和立即更新 -->
+    <TextBox Text="{Binding MergeTolerance, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=F4}" 
+  VerticalAlignment="Center" TextAlignment="Center" FontSize="14" Padding="4" 
+   ToolTip="曲线端点距离小于此值时将被视为相连"/>
+       <TextBlock Text="(默认: 0.0100)" FontSize="10" Foreground="Gray" 
+ TextAlignment="Center" Margin="0,2,0,0"/>
+   </StackPanel>
+  </Border>
 
-                    <DataGridTemplateColumn Header="操作">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Content="移除" 
-                                        Command="{Binding DataContext.RemoveUsvCommand, RelativeSource={RelativeSource AncestorType=Window}}" 
-                                        CommandParameter="{Binding}"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
+     <ListBox ItemsSource="{Binding Curves}" SelectedItem="{Binding SelectedCurve}" 
+      BorderThickness="1" BorderBrush="#DDDDDD" SelectionChanged="CurveList_SelectionChanged">
+   <ListBox.ItemTemplate>
+     <DataTemplate>
+<StackPanel Orientation="Horizontal">
+      <TextBlock Text="📏 " FontSize="14"/>
+             <TextBlock Text="{Binding Name}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+      <TextBlock Text=" ✓" FontSize="12" Foreground="Green" Margin="4,0,0,0"
+    Visibility="{Binding IsLofted, Converter={StaticResource BoolToVisibilityConverter}}"/>
+   </StackPanel>
+     </DataTemplate>
+ </ListBox.ItemTemplate>
+ </ListBox>
+           </DockPanel>
+          </Border>
 
-            <!-- 新增：第三列的画布编辑器 -->
-            <Grid Grid.Column="2" Margin="6">
-                <!-- 如果 PathEditor 已经存在于 Path.Views 命名空间，保持原样 -->
-                <views:PathEditor x:Name="PathEditorControl" />
-            </Grid>
+            <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Stretch" Background="#E0E0E0"/>
 
-        </Grid>
-       
-    </DockPanel>
+<!-- 中间：步骤列表和详细数据 -->
+            <Grid Grid.Column="2">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*"/>
+           <RowDefinition Height="4"/>
+     <RowDefinition Height="*"/>
+     </Grid.RowDefinitions>
+
+  <!-- 步骤列表 -->
+  <Border Grid.Row="0" BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="4" Padding="4" Background="White">
+          <DockPanel>
+             <TextBlock DockPanel.Dock="Top" Text="步骤列表" FontWeight="Bold" Margin="0,0,0,8" FontSize="14"/>
+        <TreeView x:Name="StepTree" ItemsSource="{Binding Steps}" SelectedItemChanged="OnStepSelected" BorderThickness="0">
+      <TreeView.ItemTemplate>
+  <HierarchicalDataTemplate ItemsSource="{Binding Usvs}">
+           <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold"/>
+    <HierarchicalDataTemplate.ItemTemplate>
+       <DataTemplate>
+                   <StackPanel Orientation="Horizontal">
+    <TextBlock Text="🚢 " FontSize="12"/>
+         <TextBlock Text="{Binding Id}"/>
+       </StackPanel>
+</DataTemplate>
+   </HierarchicalDataTemplate.ItemTemplate>
+   </HierarchicalDataTemplate>
+        </TreeView.ItemTemplate>
+       </TreeView>
+   </DockPanel>
+      </Border>
+
+  <GridSplitter Grid.Row="1" Height="4" HorizontalAlignment="Stretch" Background="#E0E0E0"/>
+
+                <!-- USV 数据网格 -->
+                <Border Grid.Row="2" BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="4" Padding="4" Background="White">
+                 <DockPanel>
+    <TextBlock DockPanel.Dock="Top" Text="USV 详细数据" FontWeight="Bold" Margin="0,0,0,8" FontSize="14"/>
+         <DataGrid x:Name="UsvGrid" ItemsSource="{Binding SelectedStep.Usvs}">
+          <DataGrid.Columns>
+       <DataGridTextColumn Header="编号" Binding="{Binding Id}" Width="70"/>
+              <DataGridTextColumn Header="X" Binding="{Binding X, StringFormat=F2}" Width="60"/>
+         <DataGridTextColumn Header="Y" Binding="{Binding Y, StringFormat=F2}" Width="60"/>
+        <DataGridTextColumn Header="Z" Binding="{Binding Z, StringFormat=F2}" Width="60"/>
+            <DataGridTextColumn Header="Yaw" Binding="{Binding Yaw, StringFormat=F1}" Width="50"/>
+  <DataGridTextColumn Header="Speed" Binding="{Binding Speed, StringFormat=F2}" Width="55"/>
+        </DataGrid.Columns>
+         </DataGrid>
+        </DockPanel>
+     </Border>
+      </Grid>
+
+            <GridSplitter Grid.Column="3" Width="4" HorizontalAlignment="Stretch" Background="#E0E0E0"/>
+
+         <!-- 右侧：3D 编辑器 -->
+    <Border Grid.Column="4" BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="4" Background="White">
+     <DockPanel>
+  <TextBlock DockPanel.Dock="Top" Text="3D 视图" FontWeight="Bold" Margin="8" FontSize="14"/>
+<views:PathEditor3D x:Name="PathEditor3DControl"/>
+         </DockPanel>
+   </Border>
+   </Grid>
+  </DockPanel>
 </Window>
